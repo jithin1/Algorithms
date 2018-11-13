@@ -19,8 +19,8 @@ class Solution {
          int[] ways = new int[nums.length];
         int length = result.length -1;
         
-        Arrays.fill(result,1);
-        Arrays.fill(ways,1);
+        Arrays.fill(result,1); // to store the longest subsequences
+        Arrays.fill(ways,1); // to store the number of ways to reach a paricular index
         
         for(int i=1; i<result.length;i++)
             for(int j=0;j < i; j++)
@@ -28,7 +28,7 @@ class Solution {
 
                     if(result[i] < result[j]+1)
                     {
-                        result[i] = result[j]+1;
+                        result[i] = result[j]+1; 
                         ways[i] = ways[j];  //stores the number of ways to reach a particular number
                     }
                     
@@ -44,16 +44,16 @@ class Solution {
            for(int i=1; i<length+1; i++){
                if(max < result[i]){
                    max = result[i];
-                   count = ways[i];
+                   count = ways[i]; 
                }
                
                else if(max == result[i])
-                   count = count+ways[i];  // to count the total number of ways
+                   count = count+ways[i];  // to count the total number of ways for all the possible maximun Subsequences
            }
 
              return count;
     }
 }
 
-// time complexity is O(n*n)
-// space comlexity is O(n).
+// Time complexity is O(n*n)
+// Space comlexity is O(n).

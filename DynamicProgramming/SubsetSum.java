@@ -1,3 +1,8 @@
+/*
+Given a set of non-negative integers, and a value sum, determine if there is a subset of the given set with sum equal to given sum.
+Time complexity is Psuedo polynomial
+Space cpomplexity is O(sum*lengthofinputarray)
+*/
 class SubsetSum{
     
      public static void subsetSum(int[] input, int sum){

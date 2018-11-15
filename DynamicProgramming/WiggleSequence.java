@@ -36,7 +36,7 @@ For example, [1,7,4,9,2,5] is a wiggle sequence because the differences (6,-3,5,
 
 // Time complexity is O(n*n)
 
-  Approach 2
+//  Approach 2
   
      class Solution {
     public int wiggleMaxLength(int[] nums) {
@@ -44,8 +44,8 @@ For example, [1,7,4,9,2,5] is a wiggle sequence because the differences (6,-3,5,
          if(nums.length <2 )
              return nums.length;
         
-        int up[] = new int[nums.length];
-        int down[] = new int[nums.length];
+        int up[] = new int[nums.length];  // Max up so far
+        int down[] = new int[nums.length]; // Max down so far
         
         for(int i=1; i<nums.length; i++)
         {

@@ -83,3 +83,54 @@ class Solution {
          return false;
     }
 }
+
+ // Dynamic problem solution with Time complexity is O(n*n)
+  // Space Complexity is O(n*n)
+
+public class Solution {
+    public boolean PredictTheWinner(int[] nums) {
+        int[][] dp = new int[nums.length][nums.length];
+        
+        for(int i=0; i<nums.length; i++)
+            dp[i][i] = nums[i];
+        
+        for (int s = nums.length-2; s >= 0; s--) {
+            for (int e = s + 1; e < nums.length; e++) {
+                int a = nums[s] - dp[s + 1][e];
+                int b = nums[e] - dp[s][e - 1];
+                dp[s][e] = Math.max(a, b);
+            }
+        }
+        return dp[0][nums.length - 1] >= 0;
+    }
+    
+    public static void main(String[] args){
+    	Solution s = new Solution();
+    	int[] nums = {4,9,3,2};
+    	System.out.println(s.PredictTheWinner(nums));
+    }
+}
+
+ /*
+  4   0   0   0
+      9   0   0
+          3   0
+              2
+              
+    4   0   0   0
+        9   0   0
+            3   (3-2)
+                2 
+              
+      4   0     0     0
+          9   (9-3)   0
+                3   (3-2)
+                      2 
+      
+       4   0     0     0
+          9   (9-3)   9 - (3-2)
+                3     (3-2)
+                       2
+                       
+                       ......
+ */

@@ -1,0 +1,1362 @@
+x KnapSack Problem 
+
+  Each item has a value and a weight. We need to pick up items such that the value is maximum and weight is minimum. 
+
+   Calculate value/weight ratio and sort it.
+
+  
+1) 0/1 KnapSack Problem
+
+  Given weights and values of n items, put these items in a knapsack of capacity W to get the maximum total value in the
+ knapsack. In other words, given two integer arrays val[0..n-1] and wt[0..n-1] which represent values and weights associated 
+ with n items respectively. Also given an integer W which represents knapsack capacity, find out the maximum value subset of 
+ val[] such that sum of the weights of this subset is smaller than or equal to W. You cannot break an item, either pick the 
+ complete item, or don’t pick it (0-1 property).
+
+  1) Optimal Substructure:
+
+To consider all subsets of items, there can be two cases for every item: 
+ (1) The item is included in the optimal subset, 
+ (2) Not included in the optimal set.
+
+      Therefore, the maximum value that can be obtained from n items is max of following two values.
+1) Maximum value obtained by n-1 items and W weight (excluding nth item).
+2) Value of nth item plus maximum value obtained by n-1 items and W minus weight of the nth item (including nth item).
+
+  If weight of nth item is greater than W, then the nth item cannot be included and case 1 is the only possibility.
+
+  // A Dynamic Programming based solution for 0-1 Knapsack problem
+class Knapsack
+{
+
+	// A utility function that returns maximum of two integers
+	static int max(int a, int b) { return (a > b)? a : b; }
+	
+// Returns the maximum value that can be put in a knapsack of capacity W
+	static int knapSack(int W, int wt[], int val[], int n)
+	{
+		int i, w;
+	int K[][] = new int[n+1][W+1];
+	
+	// Build table K[][] in bottom up manner
+	for (i = 0; i <= n; i++)
+	{
+		for (w = 0; w <= W; w++)
+		{
+			if (i==0 || w==0)
+				K[i][w] = 0;
+			else if (wt[i-1] <= w)
+				K[i][w] = max(val[i-1] + K[i-1][w-wt[i-1]], K[i-1][w]);
+			else
+				K[i][w] = K[i-1][w];
+		}
+	}
+	
+	return K[n][W];
+	}
+
+
+	// Driver program to test above function
+	public static void main(String args[])
+	{
+		int val[] = new int[]{60, 100, 120};
+	int wt[] = new int[]{10, 20, 30};
+	int W = 50;
+	int n = val.length;
+	System.out.println(knapSack(W, wt, val, n));
+	}
+}
+
+ 2) Longest common Subsequence
+
+   A subsequence is a sequence that can be derived from another sequence by deleting some elements without changing the order
+ of the remaining elements. Longest common subsequence (LCS) of 2 sequences is a subsequence, with maximal length, which is 
+ common to both the sequences. 
+  
+        Using recursion
+
+   class LCS{
+    
+    public static int getLCS(String s1,String s2,int n1,int n2){
+        if(n1==s1.length() || n2== s2.length())
+         return 0;
+         
+         else if(s1.charAt(n1)==s2.charAt(n2)){
+             return 1+getLCS(s1,s2,n1+1,n2+1);  // 1+ solution of subSets
+         }
+         
+         else{
+             return Math.max(getLCS(s1,s2,n1+1,n2),getLCS(s1,s2,n1,n2+1)); max of sub problems
+         }
+         
+    }
+    
+    public static void main(String[] args){
+       String s1="AGGTAB";    
+       String s2="GXTXAYB";
+       System.out.print(getLCS(s1,s2,0,0));
+    }
+    
+ }
+
+   Time complexity is 2 power n
+
+
+  Using Dynamic programming
+
+   class LCS{
+    
+    public static int getLCS(String s1,String s2){
+        int n=s1.length();
+        int m= s2.length();
+        
+        char[] c1= s1.toCharArray();
+        char[] c2= s2.toCharArray();
+        
+        int[][] lcs= new int[n+1][m+1];
+        
+        for(int i=0;i <= n;i++)
+           for(int j=0;j <= m;j++){
+                
+                if(i==0 || j==0)
+                 lcs[i][j] = 0;
+        
+              else if(c1[i-1] != c2[j-1])
+               lcs[i][j]= Math.max(lcs[i-1][j], lcs[i][j-1]);
+               
+               else
+                lcs[i][j] = 1+ lcs[i-1][j-1];
+           }
+           
+           
+           return lcs[n][m];
+    }
+    
+    public static void main(String[] args){
+       String s1="AGGTAB";    
+       String s2="GXTXAYB";
+       System.out.print(getLCS(s1,s2));
+    }
+    
+ }
+
+  Time complexity is O(m*n)
+  Space complexity is O(m*n)
+
+
+  3. Matrix chain multiplication
+
+    Given few Matrices, find the order of multiplying them such that the cost is minimum
+                A1     A2     A3     A4
+     Example: [5*4]  [4*6]  [6*2]  [2*7]
+            cost multiplying A1 with A2 is 5*6*4 think of multiplication
+             A3 with A4 is 6*2*7
+              result of A!,A2 with result of A3,A4 is 5*6*7
+
+
+       total = 120+84+210 = 414	
+
+
+  4) Sum of subset
+
+ //Given a set of non-negative integers, and a value sum, determine if there is a subset of the given set with sum equal to given sum.
+  class SumOfSubsets{
+    
+    public static void sos(int[] input, int m){
+         int n=input.length;
+        boolean[][] t= new boolean[n+1][m+1];
+        
+        t[0][0] = true;
+        
+        for(int j=1; j<=n ;j++)
+            t[j][0] = true;
+        
+        for(int j=1; j<=m ;j++)
+            t[0][j] = false;        
+   
+         for(int i=1; i <= n ; i++)
+          for(int j=1; j <=m; j++){
+              
+             if(input[i-1] > j )
+                t[i][j] = t[i-1][j];
+                
+              else if(t[i-1][j] == true)
+                t[i][j] = t[i-1][j];
+                
+              else
+                t[i][j] = t[i-1][j- input[i-1]]; 
+          }
+        
+           if(t[n][m] == false)
+             System.out.print("no solution");
+             
+           else{
+               int i=n, j=m;
+                  while(j >0 ){
+                     if(t[i-1][j] == true)
+                      i=i-1;
+                    else
+                     {
+                         System.out.print(input[i-1]+" ");
+                         j=j-input[i-1] ;
+                     }
+                    
+                  }
+                   
+           }
+
+    }
+    
+    public static void main(String[] args){
+        int[] s = {5,10,12,13,15,18,9,1,3,22,1};
+         int sum=1000;
+        sos(s,sum);
+     }    
+ }	
+
+
+ 5) Minimum number of coins
+
+  import java.util.*;
+ class MinimumCoins{
+    
+    public static void sos(int[] input, int m){
+
+          int[] total = new int[m+1];
+          int[] num = new int[m+1];
+                    
+          for(int i=0; i<=m; i++){
+              total[i]= Integer.MAX_VALUE-1 ;
+              num[i] = -1;
+          }
+          
+          total[0] = 0;
+          
+           for(int i=0; i<input.length; i++){
+               for(int j=1; j<=m; j++){
+                   
+                   if(input[i] <= j ){  // j is the value of denomination
+                       if(total[j] > 1+total[j-input[i]]){
+                           total[j]= 1+total[j-input[i]];  
+                           num[j]=i;
+                       }
+                   }	
+                }
+           }
+                      
+              if(total[m]==Integer.MAX_VALUE-1)
+               System.out.print("Not possible");
+               
+               
+              else{
+           System.out.println("Minimum Number of coins is "+total[m]);
+              int i=m;
+              
+             while(i!=0){
+              System.out.print(input[num[i]]+" ");
+              i-=input[num[i]];
+               } 
+           }
+    }
+
+
+     
+    public static void main(String[] args){
+        int[] s = {7,2,6,9,11,14};
+         int sum=13;
+        sos(s,sum);
+    }    
+ }
+
+
+   6) Minimum edit distance
+
+    Minimum modifications (edit, delete, insert) needed to convert a String to another
+   
+   class MinEditDistance{
+    
+    public static void getMin(String s1, String s2){
+        char c1[] = s1.toCharArray();
+        char[] c2= s2.toCharArray();
+        
+        int n=s1.length();
+        int m= s2.length();
+        
+        int[][] t= new int[m+1][n+1];
+        
+        for(int i=0; i<= n; i++)
+          t[0][i] = i;
+          
+        for(int i=0; i<=m; i++)
+           t[i][0] = i;
+        
+        for(int i=1; i<=m; i++)
+           for(int j=1; j<=n; j++){
+               if(c1[j-1] == c2[i-1])
+                 t[i][j] = t[i-1][j-1];
+                 
+               else{
+                   t[i][j] = 1+Math.min(t[i-1][j], Math.min(t[i][j-1],t[i-1][j-1]));
+               }     
+           }
+           
+          System.out.print(t[m][n]); 
+          
+    }
+    
+    public static void main(String[] args){
+        String s1= "zabdef" ;
+        String s2= "ajefzc" ;
+        getMin(s1,s2);
+      }
+ } 
+
+  7) Longest Increasing SubSequence
+
+  import  java.util.*;
+
+ class LongestIncSubsequence{
+    
+    public static void Lcs(int[] arr){
+        int n= arr.length;
+        int[] t= new int[n];
+        
+        for(int i=0; i<n; i++)
+         t[i] = 1;
+        
+        for(int i=1; i<n;i++)
+          for(int j=0; j<i; j++){
+              if(arr[j] < arr[i])
+              t[i]= Math.max(t[i], t[j]+1);
+          }
+          
+          Arrays.sort(t);
+          System.out.print(t[n-1]);
+    }
+    
+    public static void main(String[] args){
+       int[] arr = {5,37,52,16,3,25,10};
+       Lcs(arr);
+      }
+    
+ }
+
+
+ 8) Longest Palindromic Sequence
+
+  class LongestPalindromeSequence{
+    
+    public static int LPS(String str){
+        int n= str.length();
+        
+        int T[][] = new int[n][n];
+        
+        for(int i=0; i<n; i++)
+          for(int j=0; j<n; j++)
+            T[i][j] = 0;
+            
+        for(int i=0; i<n; i++)
+         T[i][i]= 1;
+         
+          for(int l = 2; l <= str.length(); l++){
+            for(int i = 0; i < str.length()-l + 1; i++){
+                int j = i + l - 1;
+                if(l == 2 && str.charAt(i) == str.charAt(j) ){
+                    T[i][j] = 2;j
+                }else if(str.charAt(i) == str.charAt(j) ){
+                    T[i][j] = T[i + 1][j-1] + 2;
+                }else{
+                    T[i][j] = Math.max(T[i + 1][j], T[i][j - 1]);
+                }
+            }
+        }
+        return T[0][str.length()-1]; 
+    }
+    
+    public static void main(String[] args){
+        String s = "abcbaa";
+        System.out.print(LPS(s)) ;
+      }
+ }
+
+
+
+ 9) Cutting a rod in a way to maximize profit
+
+  class Cutting{	
+    
+    public void cut(int[] length, int[] value){
+        int sum = 5;
+        int[][] t= new int[5][6];
+        
+        for(int i=0; i<6; i++){
+            t[0][i]=0;
+        }
+        
+        for(int j=0; j<5; j++)
+            t[j][0] = 0;
+        
+        for(int i=1; i<5; i++)
+           for(int j=1; j<=5 ; j++){
+               
+               if(j >= length[i-1])
+                   t[i][j] = Math.max(t[i-1][j] ,value[i-1]+t[i][j-length[i-1]]);
+               
+               else
+                t[i][j] = t[i-1][j];
+                 
+           }
+           
+           System.out.print(t[4][5]);
+    }
+    
+    public static void main(String[] args){			
+        int[] length= new int[4];
+        int[] value = new int[4];
+        
+         for(int i=0; i<4; i++)
+           length[i] = i+1;
+           
+          value[0] = 2;
+          value[1] = 5;
+          value[2] = 7;
+          value[3] = 8;
+          
+          cut(length,value);
+     } 
+    
+ }
+
+
+  10) Egg Dropping problem
+
+  class EggDropping{
+    
+    public static void calculate(int n_o_e, int floors){
+        int t[][] = new int[n_o_e][floors+1];
+        
+        for(int i=0; i<n_o_e; i++)
+          t[i][0] = 0;
+          
+        for(int i=0; i<=floors; i++)
+          t[0][i]=i;
+          
+          for(int i=1; i<n_o_e; i++){
+              for(int j=1; j<=floors; j++){
+                  if(i+1>j)  // number of eggs is greater than index
+                    t[i][j] = t[i-1][j];
+                    
+                    else{
+                        int min=Integer.MAX_VALUE;
+                        for(int k=1;k<=j; k++)
+                         {
+                             min=Math.min(min,Math.max(t[i-1][k-1],t[i][j-k]));
+                         }
+                         
+                         t[i][j]= 1+min;
+                    }
+                   
+              }
+          }
+          
+              for(int i=0; i<n_o_e; i++){
+              for(int j=1; j<=floors; j++)
+                System.out.print(t[i][j]+" ");
+                System.out.println();
+              }
+              
+              // t[noe-1][floors] will hold the answer
+    }
+    
+    public static void main(String[] args){
+        int n_o_e= 2;
+        int floors=10;
+        
+        calculate(n_o_e,floors);
+      }
+    
+ }
+
+
+  11) Maximum Sum Sub Array  // Amazing
+
+   import java.util.*;
+  class MaxSumSubArray{
+       
+          static int cur_sum;
+          static int max_sum=Integer.MIN_VALUE;
+          static int max_left=0;
+          static int max_right=0;
+          static int max_up=0;
+          static int max_down=0;
+
+    public static void max_sum(int[][] in){
+
+          int r[] = new int[4];
+
+         for(int col=0; col<5; col++){
+             
+              for(int i=0; i<4; i++)
+                 r[i]=in[i][col];
+                 
+                kadanes(r);
+                
+                if(max_sum < cur_sum){
+                max_sum = cur_sum;
+                 max_left = col; // as we are in that particular column
+                 max_right = col;  // as we are in that particular column
+            }
+              
+              for(int c=col+1; c<5; c++){
+                  
+                 for(int i=0;i<4;i++)
+                   r[i]= r[i]+in[i][c];
+                   
+                   kadanes(r);
+                   
+                if(max_sum < cur_sum){
+                max_sum = cur_sum;
+                 max_left = col; // as we are in that particular column
+                 max_right = c;  // as we are in that particular column
+                   } 
+              }
+         }
+         
+          System.out.println("left "+max_left+" right "+max_right+" up "+max_up+" down "+max_down+" sum "+max_sum);  
+    }  
+    
+      public static void kadanes(int[] r){
+           int top=0;
+           int max_tillnow = 0;
+           
+          for(int i=0;i<r.length; i++){
+               max_tillnow += r[i];
+               
+               if(cur_sum < max_tillnow){
+                   
+                       max_up = top;
+                   
+                     max_down = i;   
+                     cur_sum = max_tillnow;
+               }
+                 
+                 if(max_tillnow < 0){
+                      top= i+1;
+                    max_tillnow = 0;
+                 }
+                 
+            }
+
+      }
+    
+    public static void main(String[] args){
+        int[][] input= new int[4][5];
+             Scanner s= new Scanner(System.in);
+             
+            for(int i=0; i<4; i++){
+              for(int j=0; j<5; j++)
+               input[i][j]=s.nextInt();
+            }
+            
+              max_sum(input);
+           
+
+       }    
+   }
+
+
+  12) Maximum profit by buying and selling stocks with transactions
+
+   class BuySellStock{
+    
+    public static void calculate(int tran, int[] price){
+        
+       int[][] t =new int[tran+1][price.length];
+       
+        for(int i=0; i< price.length; i++)
+          t[0][i] = 0;
+          
+         for(int i=0; i<=tran; i++)
+          t[i][0] = 0;
+          
+          int max_diff=t[0][0] - price[0];
+          
+          for(int i=1; i<=tran; i++){
+               max_diff=t[i][0] - price[0];
+               
+              for(int j=1; j<price.length; j++){
+                  t[i][j]=Math.max(t[i][j-1],max_diff+price[j]);
+                  max_diff = Math.max(max_diff,t[i-1][j]-price[j]);
+                  
+              }
+          }
+          
+               int l=price.length-1;  
+               int p=t[tran][l];
+               int tr=tran;
+               
+               // for displaying days
+                 while(t[tr][l] == p)
+                  l--;
+                  
+            System.out.println("Sell at day "+(l+1));
+                   tr--;
+                   p= p-price[l+1];
+             
+               while(tr > 0){
+                   while(t[tr][l]-price[l] != p)
+                    l--;
+                    
+                   p=t[tr][l];
+                   System.out.println("Buy at day "+l);
+                
+                     while(t[tr][l] == p)
+                      l--;
+                  
+                       System.out.println("Sell at day "+(l+1));
+                       tr--;
+                       p= p-price[l+1];
+            }
+            
+             System.out.println("Buy at Day 0");
+             System.out.println("Maximum profit "+t[tran][price.length-1]);
+      }
+    
+         public static void main(String[] args){
+        int tran = 5;
+        int[] price = {5,23,7,11,96,85,17,26,92};
+         calculate(tran,price);    
+        }
+     
+  } 
+
+
+
+   13) Minimum Cost Path
+
+      import java.util.*;
+
+  class MinCostPath{
+    
+    public static void calculate(int[][] t){
+        
+        for(int i=1; i<4; i++)
+          t[0][i]+= t[0][i-1];
+          
+          for(int i=1; i<3; i++)
+           t[i][0]+= t[i-1][0];
+           
+           for(int i=1; i<3; i++)
+             for(int j=1; j<4; j++)
+              t[i][j] = Math.min(t[i-1][j] , t[i][j-1]) + t[i][j];
+              
+              System.out.print(t[2][3]);
+    }
+    
+       
+    public static void main(String[] args){
+        Scanner s = new Scanner(System.in);
+        
+        int t[][] = new int[3][4];
+         
+         for(int i=0; i<3; i++)
+          for(int j=0; j<4; j++)
+             t[i][j] = s.nextInt();
+              
+        calculate(t);
+      }
+     
+  }
+
+
+ 
+ 14) Text justification
+
+    
+   public class TextJustification {
+
+    public String justify(String words[], int width) {
+        
+        int cost[][] = new int[words.length][words.length];
+        
+
+        for(int i=0 ; i < words.length; i++){
+            cost[i][i] = width - words[i].length();
+            for(int j=i+1; j < words.length; j++){
+                cost[i][j] = cost[i][j-1] - words[j].length() - 1; 
+            }
+        }
+        
+        for(int i=0; i < words.length; i++){
+            for(int j=i; j < words.length; j++){
+                if(cost[i][j] < 0){
+                    cost[i][j] = Integer.MAX_VALUE;
+                }else{
+                    cost[i][j] = (int)Math.pow(cost[i][j], 2);
+                }
+            }
+        }
+ 
+ 
+          // calculate min cost array
+          
+        int minCost[] = new int[words.length];
+        int result[] = new int[words.length];
+        
+        for(int i = words.length-1; i >= 0 ; i--){
+            minCost[i] = cost[i][words.length-1];
+            result[i] = words.length;
+            for(int j=words.length-1; j > i; j--){
+                if(cost[i][j-1] == Integer.MAX_VALUE){
+                    continue;
+                }
+                if(minCost[i] > minCost[j] + cost[i][j-1]){
+                    minCost[i] = minCost[j] + cost[i][j-1];
+                    result[i] = j;
+                }
+            }
+        }
+        
+        int i = 0;
+        int j;
+        
+        System.out.println("Minimum cost is " + minCost[0]);
+        System.out.println("\n");
+
+        StringBuilder builder = new StringBuilder();
+        do{
+            j = result[i];
+            for(int k=i; k < j; k++){
+                builder.append(words[k] + " ");
+            }
+            builder.append("\n");
+            i = j;
+        }while(j < words.length);
+        
+        return builder.toString();
+    }
+    
+    public static void main(String args[]){
+        String words1[] = {"Tushar","likes","to","write","code","at", "free", "time"};
+        TextJustification awl = new TextJustification();
+        System.out.println(awl.justify(words1, 12));
+     }
+ }
+
+
+
+ 15) Minimum number of steps needed to reach the end of an array
+
+  import java.util.Arrays;
+
+    class MinJumps{
+    
+    public static void calculate(int[] a){
+        int []steps = new int[a.length];
+        int[] paths = new int[a.length];
+        
+        for(int i=1; i< a.length; i++){
+            steps[i] = Integer.MAX_VALUE;
+            paths[i] = Integer.MAX_VALUE;
+        }
+        
+        steps[0] = 0;
+        paths[0] = -1;
+        
+         for(int i=0; i< a.length-1; i++){
+             int step = a[i];
+              
+              if(step == 0) // no point in going forward
+               continue;
+               
+               
+               for(int j= 1; j<=step; j++){
+                   
+                   if((i+j) >= a.length)  // boundary condition
+                     break;
+                     
+                    if(steps[i+j] > steps[i]+1){  //better path found
+                        steps[i+j]= steps[i]+1;
+                        paths[i+j] = i;
+                    }
+               }
+         }
+         
+         System.out.println("Mininmum number of steps = "+ steps[a.length-1]);          
+          
+    }
+    
+    public static void main(String[] args){
+       int[] a ={2,3,1,1,2,4,4,0,5,1};
+       calculate(a);
+    }     
+ }
+
+
+  16) Minimum splits needed to convert a string to a palindrome
+
+    class PalindromicPartition {
+    
+      public static void convert(String s){
+        int n=s.length();
+        int[][] t= new int[n][n];
+         
+         for(int i=0; i<n; i++)
+            t[i][i] = 0;
+            
+       for(int l = 2; l <= s.length(); l++){
+            for(int i = 0; i < s.length()-l + 1; i++){
+                int j = i + l - 1;
+                
+                if(isPalindrome(i,j,s))
+                  t[i][j] = 0;
+                  
+                else{
+                    int min = Integer.MAX_VALUE;
+                    
+                   	
+                     if(min > t[i][k]+t[k+1][j] )
+                        min = t[i][k]+t[k+1][j];
+                        
+                       t[i][j] = 1+min;        
+                 }
+        
+          }        
+       }
+       
+         System.out.println(t[0][s.length()-1]);
+ }
+    
+      public static boolean isPalindrome(int i,int j,String s){
+
+                 while(i < j)
+                 {
+                     if(s.charAt(i) == s.charAt(j))
+                       {
+                           i++;
+                           j--;
+                       }
+                       
+                       else 
+                        return false;
+                 }
+                 
+                 return true;
+         
+      }
+    
+	public static void main (String[] args) {
+	    String s="ponammachehc";
+	     convert(s);
+ 	} 	
+ }
+
+
+
+  17) Maximum Sum Increasing Sub Sequence in an array   
+
+      import java.util.*;
+
+  class MAxSumIncSubSeq{
+    
+    public static void convert(int[] a){
+        int[] min = new int[a.length];
+        
+         for(int i=0; i<a.length; i++)
+           min[i] = a[i];
+           
+        int[] actual = new int[a.length];
+        
+        for(int i=1; i< a.length; i++)
+         for(int j=0; j<i; j++)
+              if(a[j] < a[i]){
+                    if(min[i] < a[i]+min[j] ){
+                        min[i] = a[i]+min[j];
+                        actual[i] = j;
+                    }
+              }
+           System.out.println(Arrays.toString(min));
+           System.out.println(Arrays.toString(actual));
+          
+    }
+    
+    public static void main(String[] args){
+       int a[] = {4,6,1,3,8,4,6};
+        convert(a);
+     }
+    
+/* }
+
+
+
+  18) Ways to reach nth step
+
+      // at max 2 steps
+class MinSteps{
+    
+    public static void calculate(int n){
+        int[] fib = new int[n+1];
+        
+        fib[0] = 1;
+        fib[1] = 1;
+        
+        for(int i=2; i<=n; i++)
+           fib[i] = fib[i-1] + fib[i-2];
+           
+           System.out.println(fib[n]);
+    }
+    
+    public static void main(String[] args ){
+        int n_o_s = 10;
+        calculate(n_o_s);
+        
+    }
+ }
+
+
+  19) Maximum Sub Square matrix
+    // answer is 3 .This program prints the matrix
+
+    // Maximum sub square matrix
+  
+    class MAxSub{
+        
+        public static void calculate(int[][] a){
+             int r= a.length;
+             int c= a[0].length;
+             
+             int[][] t= new  int[r+1][c+1];
+             
+             for(int i=0; i<=r; i++)
+              t[r][0] =0;
+              
+              for(int j=0; j<=c; j++)
+               t[0][j] = 0;
+               
+               for(int i=1; i<=r; i++)
+                 for(int j=1; j<=c; j++){
+                     if(a[i-1][j-1] == 0)
+                       t[i][j] = 0;
+                      else
+                   t[i][j] = 1+ Math.min(Math.min(t[i][j-1],t[i-1][j]),t[i-1][j-1]);
+                 }
+                 
+                 for(int i=0; i< t.length; i++){
+                   System.out.println();
+             for(int j=0; j<t[i].length; j++)
+                   System.out.print(t[i][j]+" ");
+                }
+        
+        }        
+        public static void main(String[] args){
+           int[][] t= {{0,0,1,1,1},{1,0,1,1,1},{0,1,1,1,1,},{1,0,1,1,1}}; // do not specify size
+               
+               calculate(t);
+        }
+        
+    }
+
+
+
+   20) String InterLeaving
+
+   class strInterleaving{
+
+     public static void convert(String str1,String str2,String str3){
+         int c = str1.length();
+         int r = str2.length();
+         
+         char s1[] = str1.toCharArray();
+         char s2[] = str2.toCharArray();
+         char s3[] = str3.toCharArray();
+         
+         boolean[][] t = new boolean[r+1][c+1];
+         
+         t[0][0] = true;
+         
+         for(int i=0; i < c; i++)
+           if(s1[i] == s3[i])
+             t[0][i+1] = t[0][i];
+             
+         for(int i=0; i < r; i++)
+            if(s2[i] == s3[i])
+               t[i+1][0] = t[i][0];
+               
+         for(int i=1; i<=r; i++)
+           for(int j=1; j<=c; j++)
+              {
+                  if(s3[i+j-1] == s1[j-1])
+                    t[i][j] = t[i][j-1];
+                    
+                   else if(s3[i+j-1] == s2[i-1])
+                      t[i][j] =  t[i-1][j];
+                   
+                   else
+                    t[i][j] = false;
+              }
+              
+              for(int i=0; i<=r; i++){
+                  System.out.println();
+                  for(int j=0; j<=c; j++)
+                   System.out.print(t[i][j]+" ");
+              }
+         
+     }
+    
+    public static void main(String[] args){
+       String s1 = "cab";
+       String s2 = "dfe";
+       String s3 = "cdfabe";
+       
+       convert(s1,s2,s3);
+     }
+    
+ }
+
+
+   21) Dice Throw
+
+Given n dice each with m faces, numbered from 1 to m, find the number of ways to get sum X. X is the summation of values on each face when all the dice are thrown.
+
+  class DiceThrow
+ {
+     public static void calculate(int n, int m, int sum){
+         int[][] t = new int[n+1][sum+1];
+         
+         for(int j=1; j<=sum && j <= m; j++)
+           t[1][j] = 1;
+           
+           for(int i=2; i<=n; i++)
+             for(int j=1; j <=sum; j++)
+               for(int k=1; k<=m && k<j; k++){
+                   t[i][j] += t[i-1][j-k];
+               }
+               
+               System.out.println(t[n][sum]);
+     }
+     
+     public static void main(String[] args){
+         calculate(3,6,8);
+     }
+ }
+
+
+   22) Burst Ballons
+
+  public class BurstBalloons {
+
+    public int maxCoinsBottomUpDp(int[] nums) {
+
+        int T[][] = new int[nums.length][nums.length];
+
+        for (int len = 1; len <= nums.length; len++) {
+            for (int i = 0; i <= nums.length - len; i++) {
+                int j = i + len - 1;
+                for (int k = i; k <= j; k++) {
+                    //leftValue/rightValue is initially 1. If there is element on
+                    // left/right of k then left/right value will take that value.
+                    int leftValue = 1;
+                    int rightValue = 1;
+                    if (i != 0) {
+                        leftValue = nums[i-1];
+                    }
+                    if (j != nums.length -1) {
+                        rightValue = nums[j+1];
+                    }
+
+                    //before is initially 0. If k is i then before will
+                    //stay 0 otherwise it gets value T[i][k-1]
+                    //after is similarly 0 initially. if k is j then after will
+                    //stay 0 other will get value T[k+1][j]
+                    int before = 0;
+                    int after = 0;
+                    if (i != k) {
+                        before = T[i][k-1];
+                    }
+                    if (j != k) {
+                        after = T[k+1][j];
+                    }
+                    T[i][j] = Math.max(leftValue * nums[k] * rightValue + before + after,
+                            T[i][j]);
+                }
+            }
+        }
+        return T[0][nums.length - 1];
+    }
+ }
+
+
+  23) //Maximum sum of non adjacent elements of an Array
+
+class MaxSum{
+    
+    public static void calculate(int[] a){
+        int incl = a[0];
+
+        int excl = 0;
+        
+        for(int i=1; i<a.length; i++)
+         {
+             int temp = incl;
+              incl = Math.max(a[i] + excl, incl);
+              excl = temp;
+         }
+         System.out.println(incl);
+    }
+    
+    public static void main(String[] args){
+        int[] a = {1,2,1,1,3,3,1,0,1};
+        calculate(a);    
+    }
+    
+ }
+
+
+
+  24) Bitonic Series
+
+   Find length of longest subsequence which first increases and then decreases.
+
+   Intuition, use logic of longest increasing subsequence
+
+   class Bitonic{
+    
+    public static void calculate(int[] a){
+        int[] left = new int[a.length];
+        int[] right = new int[a.length];
+        
+        for(int i=0; i<a.length; i++){
+            left[i] = 1;
+            right[i] = 1;
+        }
+        
+        for(int j=1; j<a.length; j++)
+          for(int i=0; i<j; i++){
+              if(a[i] < a[j])
+               left[j] = Math.max(left[i]+1,left[j]);
+          }
+          
+        for(int j=a.length-2; j>=0; j--)
+           for(int i=a.length-1; i>j; i--){
+               if(a[j] > a[i])
+                right[j] = Math.max(right[i]+1,right[j]);
+           }
+           
+           int max=0;
+          for(int i=0; i<a.length; i++)
+           {
+               max=Math.max(left[i]+right[i],max);
+           }
+           
+           System.out.println(max-1);
+    }
+    
+    public static void main(String[] args){
+        int a[] = {2,-1,4,3,5,-1,3,2};
+         calculate(a);
+    }    
+ }
+
+
+ 25) Number of Binary Search trees
+
+   class BST{
+    
+    public static void calculate(int n){
+       int[] t = new int[n+1];
+        t[0] = 1;
+        t[1] = 1;
+        
+        for(int i=2; i<=n; i++)
+          for(int j=0; j<i; j++)
+            t[i] += t[j]*t[i-j-1];  // catalan numbers
+            
+        System.out.println(t[n]);
+    }
+    
+      public static void main(String[] args){
+        calculate(5);
+     }
+ }
+
+  
+    26) Pick from either side to maximize value
+  
+   class Player{
+    int first = 0;
+    int second = 0;
+  }
+
+  class MaxVal{
+      
+      public static void max_Val(Player[][] t, int[] a){
+             int n= a.length;
+             
+             for(int i=0; i<n; i++)
+                for(int j=i; j<n; j++)
+                   t[i][j] = new Player();
+             
+          for(int i=0; i<n; i++){
+             t[i][i].first = a[i];
+             t[i][i].second = 0;
+          }
+
+          for(int l = 1; l < n; l++){
+            for(int i = 0; i < n-l ; i++){
+                int j = i + l ;
+                
+                if( (a[i]+t[i+1][j].second) > (a[j]+t[i][j-1].second) ){
+                  t[i][j].first = a[i] + t[i+1][j].second;
+                  t[i][j].second = t[i+1][j].first;
+                 }
+                 
+                    else{
+                      t[i][j].first = a[j]+t[i][j-1].second;
+                       t[i][j].second = t[i][j-1].first;
+                   }
+                 
+               }
+          }
+          
+            System.out.println(t[0][n-1].first+" "+t[0][n-1].second);
+      }
+      
+      public static void main(String[] args){
+          
+          int[] a = {3,9,1,2};
+           int n = a.length;
+         Player[][] player = new Player[n][n];
+          max_Val(player,a);
+       }
+      
+  }
+
+ 27) New 21 Game 
+ 
+   Alice plays the following game, loosely based on the card game "21".
+
+Alice starts with 0 points, and draws numbers while she has less than K points.  During each draw, she gains an integer number of points randomly from the range [1, W], where W is an integer.  
+ Each draw is independent and the outcomes have equal probabilities.
+
+Alice stops drawing numbers when she gets K or more points.  What is the probability that she has N or less points?
+
+Example 1:
+
+Input: N = 10, K = 1, W = 10
+Output: 1.00000
+Explanation:  Alice gets a single card, then stops.
+
+Example 2:
+
+Input: N = 6, K = 1, W = 10
+Output: 0.60000
+Explanation:  Alice gets a single card, then stops.
+In 6 out of W = 10 possibilities, she is at or below N = 6 points.
+
+Example 3:
+
+Input: N = 21, K = 17, W = 10
+Output: 
+
+   Use staircase logic
+
+  class Solution {
+    public double new21Game(int N, int K, int W) {
+        
+        if (K == 0 || N >= K + W) return 1;
+        double dp[] = new double[N + 1],  Wsum = 1, res = 0;
+        dp[0] = 1;
+        for (int i = 1; i <= N; ++i) {
+            dp[i] = Wsum / W;
+            
+            if (i < K) 
+                Wsum += dp[i]; 
+            else
+                res += dp[i];
+            
+            if (i - W >= 0) 
+                Wsum -= dp[i - W]; // dp[12] = dp[2]+dp[3]+....  dp[12]
+        }
+        System.out.println(Arrays.toString(dp));
+        return res;
+
+    }
+}
+
+
+   28)  Minimum Swaps To Make Sequences Increasing
+
+
+  We have two integer sequences A and B of the same non-zero length.
+
+We are allowed to swap elements A[i] and B[i].  Note that both elements are in the same index position in their respective sequences.
+At the end of some number of swaps, A and B are both strictly increasing.  (A sequence is strictly increasing if and only if A[0] < A[1] < A[2] < ... < A[A.length - 1].)
+
+Given A and B, return the minimum number of swaps to make both sequences strictly increasing.  It is guaranteed that the given input always makes it possible.
+
+Example:
+Input: A = [1,3,5,4], B = [1,2,3,7]
+Output: 1
+Explanation: 
+Swap A[3] and B[3].  Then the sequences are:
+A = [1, 3, 5, 7] and B = [1, 2, 3, 4]
+which are both strictly increasing.	
+
+
+   class Solution {
+    public int minSwap(int[] A, int[] B) {
+        int[][] dp = new int[A.length][2];
+         // 0 dont swap, 1 swap
+        dp[0][1] = 1;	
+         
+        for(int i=1;i<A.length; i++){
+
+            if( (A[i] > A[i-1] && B[i] > B[i-1]) && (A[i] > B[i-1] && B[i] > A[i-1]) )
+            {
+                dp[i][0] = Math.min(dp[i-1][0],dp[i-1][1]);
+                dp[i][1] = Math.min(dp[i-1][0],dp[i-1][1])+1;
+            }
+             else if(A[i] <= A[i-1] || B[i] <= B[i-1]){
+                 dp[i][0] = dp[i-1][1];
+                 dp[i][1] = dp[i-1][0]+1;
+             }
+               else{
+                   dp[i][0] = dp[i-1][0];
+                   dp[i][1] = dp[i-1][1] +1;
+               }
+        }
+        
+        return Math.min(dp[A.length-1][0],dp[A.length-1][1]);
+    }  
+}
+
+  optimized version
+
+
+   class Solution {
+    public int minSwap(int[] A, int[] B) {
+        int swap = 1;
+        int dontswap = 0;
+         // 0 dont swap, 1 swap
+
+         
+        for(int i=1;i<A.length; i++){
+
+            if( (A[i] > A[i-1] && B[i] > B[i-1]) && (A[i] > B[i-1] && B[i] > A[i-1]) )
+            {
+                int min = Math.min(swap,dontswap);
+                dontswap = min;
+                swap = min+1;
+            }
+             else if(A[i] <= A[i-1] || B[i] <= B[i-1]){
+                 int temp = swap;
+                 swap = dontswap+1;
+                 dontswap = temp;
+             }
+               else
+                  swap++;            
+               
+        }
+         return Math.min(swap,dontswap);
+    }  
+}

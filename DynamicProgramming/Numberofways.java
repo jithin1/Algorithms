@@ -19,6 +19,8 @@ Input
 5
 1 2 3 0 3
 
+ 1 2 | 3 | 0 3
+ 1 2 | 3 0 | 3
 */
 
 import java.io.BufferedReader;
@@ -48,15 +50,15 @@ public class Solution{
             sum = 0;
            for(int i=n-1; i>=0; i--){
         	   sum+=a[i];
-        	   if(sum == tar)
-        		   dp[i] = dp[i+1]+1;
+        	   if(sum == tar)  // number of ways from right
+        		   dp[i] = dp[i+1]+1;   
         	   else
         		   dp[i] = dp[i+1];
            }
 		   sum = 0;
 		   for(int i=0; i<n-1; i++){
 			   sum+=a[i];
-			   if(sum == tar)
+			   if(sum == tar)   // first line
 				   ans+=dp[i+2];
 		   }
 	   

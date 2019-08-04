@@ -1,9 +1,12 @@
 /* https://codeforces.com/contest/1096/problem/D
 
 H  A  H  A  R  D
-   3  8  5  2 16 18
-
-Remove first H and last A */
+3  8  5  2 16 18
+ Remove first H and last A 
+ 
+  Recurrence Relation
+     dp[j] = Math.min(dp[j]+a[i], dp[j-1])
+*/
 
 
 import java.util.*;

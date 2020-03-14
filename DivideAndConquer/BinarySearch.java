@@ -21,7 +21,7 @@
      }
 
 
-Way 2 seems better. 
+// Way 2 seems better gives the first element greater than or equal to the given value  
  public int binarySearch(int[] times, int val,int low, int high){
     
         while(low < high){

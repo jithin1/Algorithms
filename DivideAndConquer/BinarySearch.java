@@ -19,3 +19,18 @@
           
           return -ans-1;
      }
+
+
+Way 2 seems better. 
+ public int binarySearch(int[] times, int val,int low, int high){
+    
+        while(low < high){
+            int mid = (low+high)/2;
+            if(times[mid] < val){
+                low = mid+1;
+            }
+            else
+                high = mid;
+        }
+        return times[low]>val ? low-1:low;
+    }

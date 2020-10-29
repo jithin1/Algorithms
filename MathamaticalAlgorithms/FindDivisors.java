@@ -10,7 +10,6 @@ private static void computePrimeFactors(){
           }
      }
      
-     // don't call this method when  n == 1 or n == 2
      private static int findDivisors(int n){
         int divisors = 1;
         while(n > 1){
